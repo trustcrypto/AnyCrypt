@@ -280,6 +280,25 @@ chrome.contextMenus.create({"id": "100", "title": "Encrypt", "contexts":["select
 // Add context menu to call decryption
 chrome.contextMenus.create({"title": "Decrypt Message", "contexts":["selection"], "onclick": onRequestDecrypt });
 
+chrome.contextMenus.create({ title: "Connect to apps.crp.to", contexts: ["selection"], onclick: openCTIframe });
+
+function openCTIframe(info, tab) {
+	console.info(`************* function openCTIframe() *************`);
+	console.info(`************* info:`);
+	console.dir(info);
+	console.info(`************* tab:`);
+	console.dir(tab);
+
+	const iframeId = 'CryptoTrustIframe';
+	let el = document.getElementById(iframeId);
+	if (!el) {
+		el = document.createElement('iframe');
+		el.setAttribute('id', iframeId);
+		el.setAttribute('src', 'https://apps.crp.to');
+		document.body.appendChild(el);
+	}
+}
+
 // Chrome Extension - add listener for message from content script
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
