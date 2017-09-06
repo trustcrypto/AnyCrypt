@@ -289,15 +289,34 @@ function openCTIframe(info, tab) {
 	console.info(`************* tab:`);
 	console.dir(tab);
 
+	const message = { action: 'ENCRYPT', data: { foo: 'bar' } };
+
 	const iframeId = 'CryptoTrustIframe';
 	let el = document.getElementById(iframeId);
 	if (!el) {
 		el = document.createElement('iframe');
 		el.setAttribute('id', iframeId);
 		el.setAttribute('src', 'https://apps.crp.to');
+		el.setAttribute('height', '400px');
+		el.setAttribute('width', '600px');
 		document.body.appendChild(el);
+
+		el.onload = () => {
+			postMessageToIframe(el, message);
+		}
+	} else {
+		postMessageToIframe(el, message);
 	}
 }
+
+function postMessageToIframe(iframe, message) {
+	iframe.contentWindow.postMessage({ action: 'ENCRYPT', data: { foo: 'bar' } }, 'https://apps.crp.to');
+}
+
+window.addEventListener('message', function (event) {
+	console.info(`%%%%%%%%%%%%%% REPLY FROM apps.crp.to:`);
+	console.dir(e);
+}, false);
 
 // Chrome Extension - add listener for message from content script
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
