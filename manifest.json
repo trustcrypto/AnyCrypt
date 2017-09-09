@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "AnyCrypt",
+    "name": "OnlyKey",
     "description": "This extension enables automatic encrypting and decrypting of gpg messages",
     "version": "0.0.1",
     

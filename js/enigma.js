@@ -289,7 +289,7 @@ function openCTIframe(info, tab) {
 	console.info(`************* tab:`);
 	console.dir(tab);
 
-	const message = { action: 'ENCRYPT', data: { foo: 'bar' } };
+	const message = { action: 'ENCRYPT', data: info.selectionText };
 
 	const iframeId = 'CryptoTrustIframe';
 	let el = document.getElementById(iframeId);
@@ -310,10 +310,14 @@ function openCTIframe(info, tab) {
 }
 
 function postMessageToIframe(iframe, message) {
-	iframe.contentWindow.postMessage({ action: 'ENCRYPT', data: { foo: 'bar' } }, 'https://apps.crp.to');
+	iframe.contentWindow.postMessage(message, 'https://apps.crp.to');
 }
 
-window.addEventListener('message', function (event) {
+	/** CODE TO BE ADDED TO APPS.CRP.TO so it can reply:
+	 *  window.addEventListener('message', function (e) { console.dir(e); e.source.postMessage({ result: 'ENCRYPTED', data: e.data }, e.origin); });
+	 */
+
+window.addEventListener('message', function (e) {
 	console.info(`%%%%%%%%%%%%%% REPLY FROM apps.crp.to:`);
 	console.dir(e);
 }, false);
