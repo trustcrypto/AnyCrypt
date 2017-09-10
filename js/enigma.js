@@ -49,7 +49,7 @@ var loadAnyCryptData = function() {
 }
 
 /**
- * Addition to CryptoJS to enable string to u8array 
+ * Addition to CryptoJS to enable string to u8array
  */
 CryptoJS.enc.u8array = {
 
@@ -111,7 +111,7 @@ connect = function() {
 sendMessage = function(data) {
 
     var message = ""
-    
+
     if(data.decrypted_message){
 	message = data.decrypted_message;
     }else{
@@ -128,7 +128,7 @@ sendMessage = function(data) {
 
 /**
  *  Encrypt the message
- */ 
+ */
 encrypt = function (id, message) {
 
     var params = {
@@ -153,25 +153,25 @@ encrypt = function (id, message) {
 
 /**
  *  Decrypt the encrypted string
- *  
+ *
  *  encrypted - Encrypted string
  *  Callback function
  */
 decrypt = function(encrypted, sendResponse) {
 
-    
+
     var encrypted_string = encrypted.replace(new RegExp("zzz ", "g"), "\n");
     encrypted_string = encrypted_string.replace(new RegExp("zzz\n", "g"), "\n");
-    encrypted_string = encrypted_string.replace(new RegExp("zzz", "g"), "\n");    
-    
+    encrypted_string = encrypted_string.replace(new RegExp("zzz", "g"), "\n");
+
     var decrypted_string = "";
-    var data = {"decrypted_message": "ENCRYPTED MESSAGE: Not for you," };    
+    var data = {"decrypted_message": "ENCRYPTED MESSAGE: Not for you," };
     data["decrypted_message"] += "\n or you need to add the sender to your AnyCrypt friends";
 
     data["encrypted_message"] = encrypted_string; // encrypted string added for reference
 
     kbpgp.unbox({keyfetch: ring, armored: encrypted_string}, function(err, literals) {
-	
+
 	if (err != null) {
 	    data["error"] = true;
 	    sendResponse(data);
@@ -184,11 +184,11 @@ decrypt = function(encrypted, sendResponse) {
 		console.log(err);
 		return;
 	    }
-	    
+
 	    if (ds) { km = ds.get_key_manager(); }
-	    
+
 	    // Get signed by name
-	    if (km) {		
+	    if (km) {
 		console.log("Signed by PGP fingerprint");
 		try{
 		    data["fingerprint"] = km.get_pgp_fingerprint().toString('hex');
@@ -197,15 +197,15 @@ decrypt = function(encrypted, sendResponse) {
 		    console.log(err);
 		}
 	    }
-	    
+
 	    decrypted_string = literals[0].toString();
-	    
+
 	    if(user_key.is_pgp_locked()){
 		console.log("String is locked!!!");
 	    }
 
 	    data["decrypted_message"] = decrypted_string;
-	    
+
 	    sendResponse(data);
 	}
     });
@@ -237,7 +237,7 @@ function loadSettings(id) {
 
 		if(friend_list[i] != username){
 
-		    // AJAX call to get all 
+		    // AJAX call to get all
 		    $.ajax({
 			async: false,
 			type: 'GET',
@@ -248,7 +248,7 @@ function loadSettings(id) {
 			    }, function(err, key_manager) {
 				if (!err) {
 				    friend_keys[i] = key_manager;
-				    ring.add_key_manager(key_manager);			    
+				    ring.add_key_manager(key_manager);
 				}else{
 				    console.log(err);
 				}
@@ -280,7 +280,7 @@ chrome.contextMenus.create({"id": "100", "title": "Encrypt", "contexts":["select
 // Add context menu to call decryption
 chrome.contextMenus.create({"title": "Decrypt Message", "contexts":["selection"], "onclick": onRequestDecrypt });
 
-chrome.contextMenus.create({ title: "Connect to apps.crp.to", contexts: ["selection"], onclick: openCTIframe });
+chrome.contextMenus.create({ title: "Connect to mycrypto.github.io", contexts: ["selection"], onclick: openCTIframe });
 
 function openCTIframe(info, tab) {
 	console.info(`************* function openCTIframe() *************`);
@@ -296,7 +296,7 @@ function openCTIframe(info, tab) {
 	if (!el) {
 		el = document.createElement('iframe');
 		el.setAttribute('id', iframeId);
-		el.setAttribute('src', 'https://apps.crp.to');
+		el.setAttribute('src', 'https://mycrypto.github.io');
 		el.setAttribute('height', '400px');
 		el.setAttribute('width', '600px');
 		document.body.appendChild(el);
@@ -310,15 +310,15 @@ function openCTIframe(info, tab) {
 }
 
 function postMessageToIframe(iframe, message) {
-	iframe.contentWindow.postMessage(message, 'https://apps.crp.to');
+	iframe.contentWindow.postMessage(message, 'https://mycrypto.github.io');
 }
 
-	/** CODE TO BE ADDED TO APPS.CRP.TO so it can reply:
+	/** CODE TO BE ADDED TO mycrypto.github.io so it can reply:
 	 *  window.addEventListener('message', function (e) { console.dir(e); e.source.postMessage({ result: 'ENCRYPTED', data: e.data }, e.origin); });
 	 */
 
 window.addEventListener('message', function (e) {
-	console.info(`%%%%%%%%%%%%%% REPLY FROM apps.crp.to:`);
+	console.info(`%%%%%%%%%%%%%% REPLY FROM mycrypto.github.io:`);
 	console.dir(e);
 }, false);
 
@@ -329,12 +329,12 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 	var page_message = message.message;
 	loadSettings("100");
     }
-    
+
     if (message.encrypted_message) {
 	decrypt(message.encrypted_message, sendResponse);
     }
     // Have to return true apparently:
-    // https://code.google.com/p/chromium/issues/detail?id=343007#makechanges           
+    // https://code.google.com/p/chromium/issues/detail?id=343007#makechanges
     return true;
 });
 
