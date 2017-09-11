@@ -280,7 +280,7 @@ chrome.contextMenus.create({"id": "100", "title": "Encrypt", "contexts":["select
 // Add context menu to call decryption
 chrome.contextMenus.create({"title": "Decrypt Message", "contexts":["selection"], "onclick": onRequestDecrypt });
 
-chrome.contextMenus.create({ title: "Connect to mycrypto.github.io", contexts: ["selection"], onclick: openCTIframe });
+chrome.contextMenus.create({ title: "Connect to apps.crp.to/OnlyKey-Connector/", contexts: ["selection"], onclick: openCTIframe });
 
 function openCTIframe(info, tab) {
 	console.info(`************* function openCTIframe() *************`);
@@ -296,7 +296,7 @@ function openCTIframe(info, tab) {
 	if (!el) {
 		el = document.createElement('iframe');
 		el.setAttribute('id', iframeId);
-		el.setAttribute('src', 'https://mycrypto.github.io');
+		el.setAttribute('src', 'https://apps.crp.to/OnlyKey-Connector/');
 		el.setAttribute('height', '400px');
 		el.setAttribute('width', '600px');
 		document.body.appendChild(el);
@@ -310,15 +310,15 @@ function openCTIframe(info, tab) {
 }
 
 function postMessageToIframe(iframe, message) {
-	iframe.contentWindow.postMessage(message, 'https://mycrypto.github.io');
+	iframe.contentWindow.postMessage(message, 'https://apps.crp.to/OnlyKey-Connector/');
 }
 
-	/** CODE TO BE ADDED TO mycrypto.github.io so it can reply:
+	/** CODE TO BE ADDED TO apps.crp.to/OnlyKey-Connector/ so it can reply:
 	 *  window.addEventListener('message', function (e) { console.dir(e); e.source.postMessage({ result: 'ENCRYPTED', data: e.data }, e.origin); });
 	 */
 
 window.addEventListener('message', function (e) {
-	console.info(`%%%%%%%%%%%%%% REPLY FROM mycrypto.github.io:`);
+	console.info(`%%%%%%%%%%%%%% REPLY FROM apps.crp.to/OnlyKey-Connector/:`);
 	console.dir(e);
 }, false);
 
