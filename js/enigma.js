@@ -222,51 +222,48 @@ function onRequestDecrypt(info, tab) {
 };
 
 function loadSettings(id) {
-
     loadAnyCryptData().done(function() {
+		connect();
+		friend_list.push(username);
 
-	connect();
-	friend_list.push(username);
+		for(var i = 0; i < friend_list.length; i++){
+		    if(!friend_check.hasOwnProperty(friend_list[i])) {
 
-	for(var i = 0; i < friend_list.length; i++){
-	    if(!friend_check.hasOwnProperty(friend_list[i])) {
+			// Generate key for friends
+			var title = "Encrypt for " + friend_list[i];
+			friend_check[friend_list[i]] = i.toString();
 
-		// Generate key for friends
-		var title = "Encrypt for " + friend_list[i];
-		friend_check[friend_list[i]] = i.toString();
+			if(friend_list[i] != username){
 
-		if(friend_list[i] != username){
-
-		    // AJAX call to get all
-		    $.ajax({
-			async: false,
-			type: 'GET',
-			url: "https://keybase.io/" + friend_list[i] + "/key.asc",
-			success: function(public_key) {
-			    kbpgp.KeyManager.import_from_armored_pgp({
-				armored: public_key
-			    }, function(err, key_manager) {
-				if (!err) {
-				    friend_keys[i] = key_manager;
-				    ring.add_key_manager(key_manager);
-				}else{
-				    console.log(err);
+			    // AJAX call to get all
+			    $.ajax({
+				async: false,
+				type: 'GET',
+				url: "https://keybase.io/" + friend_list[i] + "/key.asc",
+				success: function(public_key) {
+				    kbpgp.KeyManager.import_from_armored_pgp({
+					armored: public_key
+				    }, function(err, key_manager) {
+					if (!err) {
+					    friend_keys[i] = key_manager;
+					    ring.add_key_manager(key_manager);
+					}else{
+					    console.log(err);
+					}
+				    });
+				},
+				error: function (request, status, err) {
+				    console.log(err + status);
 				}
 			    });
-			},
-			error: function (request, status, err) {
-			    console.log(err + status);
+			}else{
+			    ring.add_key_manager(user_key);
+			    friend_keys[i] = user_key;
 			}
-		    });
-		}else{
-		    ring.add_key_manager(user_key);
-		    friend_keys[i] = user_key;
+				chrome.contextMenus.create({"id": i.toString(), "parentId": id, "title" : title, "contexts":["selection"], "onclick": onRequestEncrypt });
+		    }
 		}
-		chrome.contextMenus.create({"id": i.toString(), "parentId": id, "title" : title, "contexts":["selection"], "onclick": onRequestEncrypt });
-	    }
-	}
     });
-
 }
 
 // Loads settings for application
@@ -274,13 +271,12 @@ function loadFriends(info, tab) {
     loadSettings(info.menuItemId);
 };
 
-// Add context menu to call encryption
-chrome.contextMenus.create({"id": "100", "title": "Encrypt", "contexts":["selection"], "onclick": loadFriends });
-
-// Add context menu to call decryption
-chrome.contextMenus.create({"title": "Decrypt Message", "contexts":["selection"], "onclick": onRequestDecrypt });
-
-chrome.contextMenus.create({ title: "Connect to apps.crp.to/OnlyKey-Connector/", contexts: ["selection"], onclick: openCTIframe });
+chrome.contextMenus.removeAll(() => {
+	// Add context menu items
+	chrome.contextMenus.create({"id": "100", "title": "Encrypt", "contexts":["selection"], "onclick": loadFriends });
+	chrome.contextMenus.create({"title": "Decrypt Message", "contexts":["selection"], "onclick": onRequestDecrypt });
+	chrome.contextMenus.create({ title: "Connect to apps.crp.to/OnlyKey-Connector/", contexts: ["selection"], onclick: openCTIframe });
+});
 
 function openCTIframe(info, tab) {
 	console.info(`************* function openCTIframe() *************`);
@@ -289,7 +285,7 @@ function openCTIframe(info, tab) {
 	console.info(`************* tab:`);
 	console.dir(tab);
 
-	const message = { action: 'ENCRYPT', data: info.selectionText };
+	const message = { action: 'GET_CONNECTOR', data: info.selectionText };
 
 	const iframeId = 'CryptoTrustIframe';
 	let el = document.getElementById(iframeId);
@@ -326,12 +322,11 @@ window.addEventListener('message', function (e) {
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
     if (message && message.type == 'page') {
-	var page_message = message.message;
-	loadSettings("100");
+		loadSettings("100");
     }
 
     if (message.encrypted_message) {
-	decrypt(message.encrypted_message, sendResponse);
+		decrypt(message.encrypted_message, sendResponse);
     }
     // Have to return true apparently:
     // https://code.google.com/p/chromium/issues/detail?id=343007#makechanges
