@@ -366,7 +366,7 @@ function loadSettings(id) {
               }
               custom_keyid = keyids[subkey].toString('hex').toUpperCase();
               custom_keyid = custom_keyid.match(/.{2}/g).map(hexStrToDec);
-              console.info("custom_keyid" + custom_keyid);
+              console.info("custom_keyid for signing" + custom_keyid);
             } else {
 					    friend_keys[i] = key_manager;
 					    ring.add_key_manager(key_manager);
