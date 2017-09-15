@@ -355,7 +355,7 @@ function loadSettings(id) {
 					armored: public_key
 				    }, function(err, key_manager) {
 					if (!err) {
-            	if(friend_list[i] != username){
+            	if(friend_list[i] == username){
               var keyids = key_manager.get_all_pgp_key_ids();
               if (typeof keyids[2] !== "undefined") {
                 poll_delay = 3;  //Assuming RSA 2048
