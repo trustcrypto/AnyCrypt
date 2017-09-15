@@ -8738,6 +8738,17 @@ _break()
       return this.key(this.primary).ekid();
     };
 
+    PgpEngine.prototype.get_all_key_ids = function() {
+      var k, _i, _len, _ref5, _results;
+      _ref5 = this._all_keys();
+      _results = [];
+      for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
+        k = _ref5[_i];
+        _results.push(this.key(k).get_key_id());
+      }
+      return _results;
+    };
+
     PgpEngine.prototype.validity_check = function(cb) {
       var err, k, ___iced_passed_deferral, __iced_deferrals, __iced_k;
       __iced_k = __iced_k_noop;
@@ -10022,6 +10033,10 @@ _break()
 
     KeyManager.prototype.get_ekid = function() {
       return this.pgp.get_ekid();
+    };
+
+    KeyManager.prototype.get_all_pgp_key_ids = function() {
+      return this.pgp.get_all_key_ids();
     };
 
     KeyManager.prototype.get_ekid_b64_str = function() {
