@@ -11,20 +11,20 @@ var max_time = 0;
 chrome.extension.onRequest.addListener(function(request) {
     var sel, range;
     if (window.getSelection) {
-	sel = window.getSelection()
-	var active_ele = document.activeElement;
-	if (sel.rangeCount) {
-	    range = sel.getRangeAt(0);
-	    range.deleteContents();
-	    if(active_ele.tagName == "TEXTAREA" || active_ele.tagName == "INPUT"){
-		active_ele.value = request;
-	    }else{
-		range.insertNode(document.createTextNode(request));
-	    }
-	}
+		sel = window.getSelection()
+		var active_ele = document.activeElement;
+		if (sel.rangeCount) {
+		    range = sel.getRangeAt(0);
+		    range.deleteContents();
+		    if (active_ele.tagName == "TEXTAREA" || active_ele.tagName == "INPUT") {
+				active_ele.value = request;
+		    } else {
+				range.insertNode(document.createTextNode(request));
+		    }
+		}
     } else if (document.selection && document.selection.createRange) {
-	range = document.selection.createRange();
-	range.text = request;
+		range = document.selection.createRange();
+		range.text = request;
     }
 });
 
@@ -35,27 +35,27 @@ requestDecrypt = function(encrypted_message, element) {
     data = {};
     data["encrypted_message"] = encrypted_message;
     chrome.runtime.sendMessage(data, null, function(response) {
-	if(response){
+		if (response) {
 
-	    element.innerHTML = response.decrypted_message;
+		    element.innerHTML = response.decrypted_message;
 
-	    if(!response.error){
-		// Add image for decrypted messages
-		img_loc = chrome.extension.getURL('images/owl-headcorner_low32.png');
-		img_html = '<img id="keylimepie" src="'+img_loc+'">';
-		new_html = img_html + element.innerHTML;
-		element.innerHTML = new_html;
+		    if (!response.error) {
+				// Add image for decrypted messages
+				img_loc = chrome.extension.getURL('images/owl-headcorner_low32.png');
+				img_html = '<img id="keylimepie" src="'+img_loc+'">';
+				new_html = img_html + element.innerHTML;
+				element.innerHTML = new_html;
 
-		// Add signiture if signed
-		if(response.signed_by){
-		    element.innerHTML += "<br><i> - Signed: "+response.signed_by+"</i>";
+				// Add signiture if signed
+				if (response.signed_by) {
+				    element.innerHTML += "<br><i> - Signed: "+response.signed_by+"</i>";
+				}
+		    } else {
+				if (response.encrypted_message) {
+				    element.innerHTML += "<br><details>"+response.encrypted_message+"</details>";
+				}
+		    }
 		}
-	    }else{
-		if(response.encrypted_message){
-		    element.innerHTML += "<br><details>"+response.encrypted_message+"</details>";
-		}
-	    }
-	}
     });
 }
 
@@ -70,15 +70,13 @@ searchForEncryptedMessages = function() {
 
     var element = document.getElementsByTagName("SPAN");
 
-    for(var i = 0; i < element.length; i ++){
-
-	if(element[i].textContent.indexOf(start) > -1
-	   && element[i].textContent.indexOf(end) > -1)
-	{
-	    var msg = element[i].textContent;
-	    var encrypted_message = msg.substring(msg.lastIndexOf(start), msg.lastIndexOf(end)+end.length+4);
-	    requestDecrypt(encrypted_message, element[i]);
-	}
+    for (var i = 0; i < element.length; i ++) {
+		if (element[i].textContent.indexOf(start) > -1
+		   && element[i].textContent.indexOf(end) > -1)	{
+		    var msg = element[i].textContent;
+		    var encrypted_message = msg.substring(msg.lastIndexOf(start), msg.lastIndexOf(end)+end.length+4);
+		    requestDecrypt(encrypted_message, element[i]);
+		}
     }    
 }
 
@@ -89,23 +87,21 @@ $(document).ready(function(){
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
     
     var observer = new MutationObserver(function(mutations, observer) {
+		var clock = new Date();
+		var curr_time = clock.getTime();
 
-	var clock = new Date();
-	var curr_time = clock.getTime();
-
-	var time_diff = curr_time - previous_time
-	
-	if(time_diff > max_time){
-	    console.log("Searching for messages to decrypt");
-	    max_time = Math.round((max_time + (time_diff / 4)) % 5000);
-	    searchForEncryptedMessages();
-	}
-	previous_time = curr_time;
+		var time_diff = curr_time - previous_time
+		
+		if (time_diff > max_time) {
+		    console.log("Searching for messages to decrypt");
+		    max_time = Math.round((max_time + (time_diff / 4)) % 5000);
+		    searchForEncryptedMessages();
+		}
+		previous_time = curr_time;
     });
     
     observer.observe(document.body, {
-	childList: true,
-	subtree: true,
-   });
-
+		childList: true,
+		subtree: true,
+   	});
 });
