@@ -458,8 +458,23 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 		console.dir(e);
 	}, false);
 
+	chrome.runtime.onMessageExternal.addListener(
+		function(request, sender, sendResponse) {
+			console.info('onMessageExternal REQUEST:');
+			console.dir(request);
+			console.info('onMessageExternal SENDER:');
+			console.dir(sender);
+			console.info('onMessageExternal SENDRESPONSE:');
+			console.dir(sendResponse);
+	  });
+
+
 	// Chrome Extension - add listener for message from content script
 	chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+		console.dir(message);
+		console.dir(sender);
+		console.dir(sendResponse);
+
 	    if (message && message.type == 'page') {
 			loadSettings(encryptMenuId);
 	    }

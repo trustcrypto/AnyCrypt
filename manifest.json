@@ -23,7 +23,9 @@
 			"run_at": "document_end"
 	    }
     ],
-
+	"externally_connectable": {
+		"matches": ["*://*.crp.to/*"]
+	},
     "web_accessible_resources": [
 		"images/*.gif",
 		"images/*.png",
