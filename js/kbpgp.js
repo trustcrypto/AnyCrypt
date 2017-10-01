@@ -18249,6 +18249,10 @@ _break()
                 // INTERCEPT auth_sign AND SEND hashed_data
                 // via MessagePort and handle ok_sig
                 OnlyKeyConnector.requestMessagePort({ action: 'ENCRYPT', data: hashed_data });
+
+                // FOR TESTING EXTENSION NOTIFICATIONS ONLY
+                // promptForPIN should actually be called after web app responds to extension
+                OnlyKeyConnector.promptForPIN('_ _ _');
                 
               };
             })(),
@@ -23508,7 +23512,7 @@ function decodeUtf8Char (str) {
 function verifuint (value, max) {
 
   return; // TESTING ONLY!!!!!!!!!!!!!!!!!!!
-  
+
   assert(typeof value === 'number', 'cannot write a non-number as a number')
   assert(value >= 0, 'specified a negative value for writing an unsigned value')
   assert(value <= max, 'value is larger than maximum value for type')

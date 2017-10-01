@@ -459,6 +459,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 		iframe.contentWindow.postMessage(message, 'https://apps.crp.to/OnlyKey-Connector/');
 	}
 
+	// Chrome Extension - add listener for message from CryptoTrust web app
 	chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
 		console.info('onMessageExternal REQUEST:');
 		console.dir(request);
@@ -466,6 +467,8 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 		console.dir(sender);
 		console.info('onMessageExternal SENDRESPONSE:');
 		console.dir(sendResponse);
+
+		promptForPIN('# # #');
 	});
 
 
@@ -491,9 +494,47 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	    return ~~(new Number('0x' + hexStr).toString(10));
 	}
 
+	function promptForPIN(pin) {
+		const OnlyKeyPinNotification = {
+			type:     'basic',
+			iconUrl:  '../images/icon64.png',
+			title:    'PIN Required',
+			message:  `Tap the encryption PIN ${pin} on your OnlyKey.`,
+			buttons: [
+				{ title: 'Click here when done' }
+			],
+			requireInteraction: true,
+			priority: 0
+		};
+
+		chrome.notifications.create('OnlyKeyPinNotification', OnlyKeyPinNotification);
+
+		chrome.browserAction.setBadgeText({ text: 'PIN' });
+
+		if (!OnlyKeyConnector.pinNotificationInitialized) {
+			chrome.notifications.onButtonClicked.addListener(id => {
+				switch (id) {
+					case 'OnlyKeyPinNotification':
+						chrome.browserAction.setBadgeText({ text: '' });
+						chrome.notifications.clear(id);
+
+						// TODO: send message to web app allowing OnlyKey to continue
+						// 		 processing encryption request
+						break;
+				}
+			});
+		}
+
+		setTimeout(chrome.browserAction.setBadgeText.bind(null, { text: '' }), 10000);
+
+		OnlyKeyConnector.pinNotificationInitialized = true;
+	}
+
 	loadFriends();
 
 	return {
-		requestMessagePort
+		requestMessagePort,
+		promptForPIN,
+		pinNotificationInitialized: false
 	};
 })();
