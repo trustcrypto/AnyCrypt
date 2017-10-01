@@ -255,9 +255,13 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	    };
 
 	    //if(something){ //Have a checkbox for sign and encrypt
-
-		//params["sign_with"] = user_key;
+		//	params["sign_with"] = user_key;
 	    //}
+
+	    // let header = ['FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF','FF'];
+	    // console.info("HEADER LENGTH: " + header.length);
+     	// OnlyKeyConnector.requestMessagePort({ action: 'ENCRYPT', data: header });
+	    // return false;
 
 	    kbpgp.box(params, function(err, result_string, result_buffer) {
 			if(!err){
