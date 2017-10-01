@@ -251,7 +251,6 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	    var params = {
 			msg: message,
 			encrypt_for: [friend_keys[id]]
-			sign_with: user_key
 	    };
 
 	    //if(something){ //Have a checkbox for sign and encrypt
