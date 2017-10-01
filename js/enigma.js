@@ -1,6 +1,6 @@
 var custom_keyid;
 
-(() => {
+const OnlyKeyConnector = (() => {
 	'use strict';
 
 	const menuRootId = 'OnlyKey.menuRootId';
@@ -236,12 +236,12 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 			message = data.encrypted_message;
 	    }
 
-	    chrome.tabs.query(
-			{ currentWindow: true, active: true },
-			function (tab) {
-			    chrome.tabs.sendRequest(tab[0].id, message);
-			}
-	    );
+	    chrome.tabs.query({
+	    	currentWindow: true,
+	    	active: true
+	    }, function (tab) {
+		    chrome.tabs.sendRequest(tab[0].id, message);
+		});
 	}
 
 	/**
@@ -250,7 +250,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	const encrypt = function (id, message) {
 	    var params = {
 			msg: message,
-			encrypt_for: [friend_keys[id]]
+			encrypt_for: [friend_keys[id]],
 			sign_with: user_key
 	    };
 
@@ -260,14 +260,14 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	    //}
 
 	    kbpgp.box(params, function(err, result_string, result_buffer) {
-		if(!err){
-		    let data = {}
-		    data["encrypted_message"] = result_string.replace(new RegExp("\n", "g"), "zzz\n");
-	      console.info("result_string" + result_string);
-		    sendMessage(data);
-		}else{
-		    console.log(err);
-		}
+			if(!err){
+			    let data = {}
+			    data["encrypted_message"] = result_string.replace(new RegExp("\n", "g"), "zzz\n");
+		     	console.info("result_string" + result_string);
+			    sendMessage(data);
+			}else{
+			    console.log(err);
+			}
 	    });
 	}
 
@@ -418,26 +418,27 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 			// Add context menu items
 			chrome.contextMenus.create({"id": encryptMenuId, "parentId": menuRootId, "title": "Encrypt", "contexts":["selection"], "onclick": loadFriends });
 			chrome.contextMenus.create({"title": "Decrypt Message", "parentId": menuRootId, "contexts":["selection"], "onclick": onRequestDecrypt });
-			chrome.contextMenus.create({ title: "Connect to apps.crp.to/OnlyKey-Connector/", "parentId": menuRootId, contexts: ["selection"], onclick: openCTIframe });
 			return cb();
 		});
 	}
 
-	function openCTIframe(info, tab) {
-		console.info(`************* function openCTIframe() *************`);
-		console.info(`************* info:`);
-		console.dir(info);
-		console.info(`************* tab:`);
-		console.dir(tab);
+	function requestMessagePort(params) {
+		console.info(`************* function requestMessagePort() *************`);
+		console.info(`************* params:`);
+		console.dir(params);
 
-		const message = { action: 'GET_CONNECTOR', data: info.selectionText };
+		const message = { action: params.action, data: params.data };
 
 		const iframeId = 'CryptoTrustIframe';
 		let el = document.getElementById(iframeId);
 		if (!el) {
+			let url = "https://apps.crp.to/OnlyKey-Connector/";
+			let h2 = document.createElement('h2');
+			h2.textContent = url;
+			document.body.appendChild(h2);
 			el = document.createElement('iframe');
 			el.setAttribute('id', iframeId);
-			el.setAttribute('src', 'https://apps.crp.to/OnlyKey-Connector/');
+			el.setAttribute('src', url);
 			el.setAttribute('height', '400px');
 			el.setAttribute('width', '600px');
 			document.body.appendChild(el);
@@ -454,20 +455,14 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 		iframe.contentWindow.postMessage(message, 'https://apps.crp.to/OnlyKey-Connector/');
 	}
 
-	window.addEventListener('message', function (e) {
-		console.info(`%%%%%%%%%%%%%% Message received from ${e.origin}`);
-		console.dir(e);
-	}, false);
-
-	chrome.runtime.onMessageExternal.addListener(
-		function(request, sender, sendResponse) {
-			console.info('onMessageExternal REQUEST:');
-			console.dir(request);
-			console.info('onMessageExternal SENDER:');
-			console.dir(sender);
-			console.info('onMessageExternal SENDRESPONSE:');
-			console.dir(sendResponse);
-	  });
+	chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
+		console.info('onMessageExternal REQUEST:');
+		console.dir(request);
+		console.info('onMessageExternal SENDER:');
+		console.dir(sender);
+		console.info('onMessageExternal SENDRESPONSE:');
+		console.dir(sendResponse);
+	});
 
 
 	// Chrome Extension - add listener for message from content script
@@ -493,4 +488,8 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	}
 
 	loadFriends();
+
+	return {
+		requestMessagePort
+	};
 })();
