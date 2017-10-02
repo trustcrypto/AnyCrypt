@@ -10,6 +10,13 @@ const OnlyKeyConnector = (() => {
 		chrome.contextMenus.create({"id": menuRootId, "title": "OnlyKey", "contexts":["selection"]});
 	}
 
+	function get_pin (byte) {
+	  if (byte < 6) return 1;
+	  else {
+	    return (byte % 5) + 1;
+	  }
+	}
+
 	var pin;
 	var poll_type, poll_delay;
 	var username = "";
@@ -135,6 +142,9 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	var friend_keys = {};
 	var friend_list = new Array();
 	var friend_check = {};
+
+	var p256 = new ECC('p256');
+	var sha256 = function(s) { return p256.hash().update(s).digest(); };
 
 	/**
 	 *  Loads friends saved in chromes local memory
@@ -467,8 +477,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 		console.dir(sender);
 		console.info('onMessageExternal SENDRESPONSE:');
 		console.dir(sendResponse);
-
-		promptForPIN('# # #');
+		promptForPIN(message.data);
 	});
 
 
@@ -495,6 +504,8 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	}
 
 	function promptForPIN(pin) {
+		var pin_hash = sha256(pin);
+		pin  = [ get_pin(pin_hash[0]), get_pin(pin_hash[15]), get_pin(pin_hash[31]) ];
 		const OnlyKeyPinNotification = {
 			type:     'basic',
 			iconUrl:  '../images/icon64.png',
