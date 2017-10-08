@@ -18248,12 +18248,8 @@ _break()
 
                 // INTERCEPT auth_sign AND SEND hashed_data
                 // via MessagePort and handle ok_sig
-                OnlyKeyConnector.requestMessagePort({ action: 'ENCRYPT', data: hashed_data });
+                OnlyKeyConnector.requestEncryption(hashed_data);
 
-                // FOR TESTING EXTENSION NOTIFICATIONS ONLY
-                // promptForPIN should actually be called after web app responds to extension
-                OnlyKeyConnector.promptForPIN('_ _ _');
-                
               };
             })(),
             lineno: 330
@@ -18265,6 +18261,19 @@ _break()
           //return cb(null, sig.to_mpi_buffer());
         };
       })(this));
+
+      exports.handle_ok_sig = function (ok_sig, cb) {
+        console.info("signature from OnlyKey:", ok_sig);
+        sig = arguments[0].to_mpi_buffer();
+        console.info("signature from app:", sig);
+        size = (ok_sig.length - 1) * 8 + nbits(ok_sig[0]);
+        hdr = new Buffer(2);
+        hdr.writeUInt16BE(size, 0);
+        sig = Buffer.concat([hdr, new Buffer(ok_sig)]);
+        console.info("sig:", sig);
+        return cb(null, sig);
+      };
+
     };
 
     Pair.prototype.verify_unpad_and_check_hash = function(_arg, cb) {

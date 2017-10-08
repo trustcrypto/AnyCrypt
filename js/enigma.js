@@ -214,14 +214,14 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 			armored: placeholder_private_key
 	    }, function(err, user) {
 			if (!err) {
-        if (user.is_pgp_locked()) {
-            let passphrase = 'test123';
-            user.unlock_pgp({
-            passphrase: passphrase
-        }, function(err) {
+		        if (user.is_pgp_locked()) {
+		            let passphrase = 'test123';
+		            user.unlock_pgp({
+			            passphrase: passphrase
+			        }, function(err) {
 					    if (!err) {
-						user_key = user;
-						console.log("Loaded placeholder private key");
+							user_key = user;
+							console.log("Loaded placeholder private key");
 					    }
 					});
 			    } else {
@@ -273,16 +273,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
      	// OnlyKeyConnector.requestMessagePort({ action: 'ENCRYPT', data: header });
 	    // return false;
 
-	    kbpgp.box(params, function(err, result_string, result_buffer) {
-			if(!err){
-			    let data = {}
-			    data["encrypted_message"] = result_string.replace(new RegExp("\n", "g"), "zzz\n");
-		     	console.info("result_string" + result_string);
-			    sendMessage(data);
-			}else{
-			    console.log(err);
-			}
-	    });
+	    kbpgp.box(params);
 	}
 
 	/**
@@ -432,21 +423,26 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 			// Add context menu items
 			chrome.contextMenus.create({"id": encryptMenuId, "parentId": menuRootId, "title": "Encrypt", "contexts":["selection"], "onclick": loadFriends });
 			chrome.contextMenus.create({"title": "Decrypt Message", "parentId": menuRootId, "contexts":["selection"], "onclick": onRequestDecrypt });
+			chrome.contextMenus.create({"title": "Connect to OnlyKeyConnector", "parentId": menuRootId, "contexts":["selection"], "onclick": postMessageToIframe.bind(null) });
 			return cb();
 		});
 	}
 
-	function requestMessagePort(params) {
-		console.info(`************* function requestMessagePort() *************`);
-		console.info(`************* params:`);
-		console.dir(params);
+	function requestEncryption(hashed_data) {
+		console.info(`************* function requestEncryption() *************`);
+		console.info(`************* hashed_data:`);
+		console.dir(hashed_data);
 
-		const message = { action: params.action, data: params.data };
+		const message = { action: 'ENCRYPT', data: hashed_data };
+		postMessageToIframe(message);
+	}
 
+	function postMessageToIframe(message) {
 		const iframeId = 'CryptoTrustIframe';
+		const  url = "https://apps.crp.to/OnlyKey-Connector/";
 		let el = document.getElementById(iframeId);
+
 		if (!el) {
-			let url = "https://apps.crp.to/OnlyKey-Connector/";
 			let h2 = document.createElement('h2');
 			h2.textContent = url;
 			document.body.appendChild(h2);
@@ -458,26 +454,40 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 			document.body.appendChild(el);
 
 			el.onload = () => {
-				postMessageToIframe(el, message);
+				postMessageToIframe(message);
 			}
-		} else {
-			postMessageToIframe(el, message);
+		} else if (message) {
+			el.contentWindow.postMessage(message, url);
 		}
 	}
 
-	function postMessageToIframe(iframe, message) {
-		iframe.contentWindow.postMessage(message, 'https://apps.crp.to/OnlyKey-Connector/');
-	}
-
 	// Chrome Extension - add listener for message from CryptoTrust web app
-	chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
-		console.info('onMessageExternal REQUEST:');
-		console.dir(request);
+	chrome.runtime.onMessageExternal.addListener((response, sender, sendResponse) => {
+		console.info('onMessageExternal RESPONSE:');
+		console.dir(response);
 		console.info('onMessageExternal SENDER:');
 		console.dir(sender);
 		console.info('onMessageExternal SENDRESPONSE:');
 		console.dir(sendResponse);
-		promptForPIN(message.data);
+
+		// check response for pin
+		promptForPIN(); // shouldn't PIN come from OnlyKeyConnector web app?
+
+		// check response for '.ok_sig' property which means encryption is done
+		if (response.data.ok_sig) {
+			kbpgp.handle_ok_sig(ok_sig, (err, result_string) => {
+				if(!err){
+				    let data = {}
+				    data["encrypted_message"] = result_string.replace(new RegExp("\n", "g"), "zzz\n");
+			     	console.info("result_string" + result_string);
+				    sendMessage(data);
+				}else{
+				    console.log(err);
+				}
+			});
+		}
+
+		return true;
 	});
 
 
@@ -512,7 +522,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 			title:    'PIN Required',
 			message:  `Tap the encryption PIN ${pin} on your OnlyKey.`,
 			buttons: [
-				{ title: 'Click here when done' }
+				{ title: 'Click here to close' }
 			],
 			requireInteraction: true,
 			priority: 0
@@ -544,7 +554,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	loadFriends();
 
 	return {
-		requestMessagePort,
+		requestEncryption,
 		promptForPIN,
 		pinNotificationInitialized: false
 	};
