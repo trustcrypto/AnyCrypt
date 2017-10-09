@@ -423,7 +423,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 			// Add context menu items
 			chrome.contextMenus.create({"id": encryptMenuId, "parentId": menuRootId, "title": "Encrypt", "contexts":["selection"], "onclick": loadFriends });
 			chrome.contextMenus.create({"title": "Decrypt Message", "parentId": menuRootId, "contexts":["selection"], "onclick": onRequestDecrypt });
-			chrome.contextMenus.create({"title": "Connect to OnlyKeyConnector", "parentId": menuRootId, "contexts":["selection"], "onclick": postMessageToIframe.bind(null) });
+			chrome.contextMenus.create({"title": "Connect to OnlyKeyConnector", "parentId": menuRootId, "contexts":["selection"], "onclick": postMessageToIframe.bind(null, null) });
 			return cb();
 		});
 	}
