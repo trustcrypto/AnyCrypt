@@ -433,7 +433,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 		console.info(`************* hashed_data:`);
 		console.dir(hashed_data);
 
-		const message = { action: 'ENCRYPT', data: hashed_data };
+		const message = { action: 'ENCRYPT', cipherText: hashed_data, poll_delay };
 		postMessageToIframe(message);
 	}
 
