@@ -453,7 +453,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 			document.body.appendChild(el);
 
 			el.onload = () => {
-				postMessageToIframe(message);
+				setTimeout(postMessageToIframe(message), 3000);
 			}
 		} else if (message) {
 			el.contentWindow.postMessage(message, url);
