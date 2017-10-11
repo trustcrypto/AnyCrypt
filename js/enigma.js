@@ -17,7 +17,7 @@ const OnlyKeyConnector = (() => {
 	  }
 	}
 
-	var pin;
+	var pin, poll_type, poll_delay;
 	var username = "";
 	var user_key = {};
 	var placeholder_private_key = `-----BEGIN PGP PRIVATE KEY BLOCK-----
