@@ -373,10 +373,10 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 							            	if (friend_list[i] == username) {
 									            var keyids = key_manager.get_all_pgp_key_ids();
 												if (typeof keyids[2] !== "undefined") {
-													poll_delay = 3;  //Assuming RSA 2048
+													poll_delay = 1;  //Assuming RSA 2048
 													var subkey = 2;
 												} else {
-													poll_delay = 11;  //Assuming RSA 4096 or 3072
+													poll_delay = 9;  //Assuming RSA 4096 or 3072
 													var subkey = 0;
 												}
 												custom_keyid = keyids[subkey].toString('hex').toUpperCase();
