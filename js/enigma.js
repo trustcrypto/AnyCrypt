@@ -473,7 +473,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 		promptForPIN(); // shouldn't PIN come from OnlyKeyConnector web app?
 
 		// check response for '.ok_sig' property which means encryption is done
-		if (response.data.ok_sig) {
+		if (response && response.data && response.data.ok_sig) {
 			kbpgp.handle_ok_sig(ok_sig, (err, result_string) => {
 				if(!err){
 				    let data = {}
