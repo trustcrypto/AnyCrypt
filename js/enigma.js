@@ -433,6 +433,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 		console.dir(hashed_data);
 
 		const message = { action: 'ENCRYPT', cipherText: hashed_data, poll_delay };
+		promptForPIN(hashed_data);
 		postMessageToIframe(message);
 	}
 
@@ -468,9 +469,6 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 		console.dir(sender);
 		console.info('onMessageExternal SENDRESPONSE:');
 		console.dir(sendResponse);
-
-		// check response for pin
-		promptForPIN(); // shouldn't PIN come from OnlyKeyConnector web app?
 
 		// check response for '.ok_sig' property which means encryption is done
 		if (response && response.data && response.data.ok_sig) {
@@ -512,40 +510,26 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	    return ~~(new Number('0x' + hexStr).toString(10));
 	}
 
-	function promptForPIN(pin) {
-		var pin_hash = sha256(pin);
-		pin  = [ get_pin(pin_hash[0]), get_pin(pin_hash[15]), get_pin(pin_hash[31]) ];
+	function promptForPIN(hashed_data) {
+		const pin_hash = sha256(hashed_data);
+		const pin  = [ get_pin(pin_hash[0]), get_pin(pin_hash[15]), get_pin(pin_hash[31]) ];
 		const OnlyKeyPinNotification = {
 			type:     'basic',
 			iconUrl:  '../images/icon64.png',
 			title:    'PIN Required',
 			message:  `Tap the encryption PIN ${pin} on your OnlyKey.`,
-			buttons: [
-				{ title: 'Click here to close' }
-			],
-			requireInteraction: true,
 			priority: 0
 		};
+		const autoClearBadgeTimeoutSeconds = 10;
 
+		// make sure it is closed, not just system hidden
+		chrome.notifications.clear('OnlyKeyPinNotification');
+		
 		chrome.notifications.create('OnlyKeyPinNotification', OnlyKeyPinNotification);
+		chrome.browserAction.setBadgeText({ text: `${pin.toString().replace(/[^1-6]/g, '')}` });
 
-		chrome.browserAction.setBadgeText({ text: 'PIN' });
-
-		if (!OnlyKeyConnector.pinNotificationInitialized) {
-			chrome.notifications.onButtonClicked.addListener(id => {
-				switch (id) {
-					case 'OnlyKeyPinNotification':
-						chrome.browserAction.setBadgeText({ text: '' });
-						chrome.notifications.clear(id);
-
-						// TODO: send message to web app allowing OnlyKey to continue
-						// 		 processing encryption request
-						break;
-				}
-			});
-		}
-
-		setTimeout(chrome.browserAction.setBadgeText.bind(null, { text: '' }), 10000);
+		// auto clear badge text after X seconds
+		setTimeout(chrome.browserAction.setBadgeText.bind(null, { text: '' }), autoClearBadgeTimeoutSeconds * 1000);
 
 		OnlyKeyConnector.pinNotificationInitialized = true;
 	}
