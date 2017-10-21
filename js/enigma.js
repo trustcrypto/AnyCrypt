@@ -520,11 +520,11 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 			message:  `Tap the encryption PIN ${pin} on your OnlyKey.`,
 			priority: 0
 		};
-		const autoClearBadgeTimeoutSeconds = 10;
+		const autoClearBadgeTimeoutSeconds = 20;
 
 		// make sure it is closed, not just system hidden
 		chrome.notifications.clear('OnlyKeyPinNotification');
-		
+
 		chrome.notifications.create('OnlyKeyPinNotification', OnlyKeyPinNotification);
 		chrome.browserAction.setBadgeText({ text: `${pin.toString().replace(/[^1-6]/g, '')}` });
 
