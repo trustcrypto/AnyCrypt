@@ -3,6 +3,8 @@ var custom_keyid;
 const OnlyKeyConnector = (() => {
 	'use strict';
 
+	const webAppUrl = "https://apps.crp.to/OnlyKey-Connector/";
+
 	const menuRootId = 'OnlyKey.menuRootId';
 	const encryptMenuId = 'OnlyKey.encryptMenuRootId';
 
@@ -439,16 +441,15 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 
 	function postMessageToIframe(message) {
 		const iframeId = 'CryptoTrustIframe';
-		const  url = "https://apps.crp.to/OnlyKey-Connector/";
 		let el = document.getElementById(iframeId);
 
 		if (!el) {
 			let h2 = document.createElement('h2');
-			h2.textContent = url;
+			h2.textContent = webAppUrl;
 			document.body.appendChild(h2);
 			el = document.createElement('iframe');
 			el.setAttribute('id', iframeId);
-			el.setAttribute('src', url);
+			el.setAttribute('src', webAppUrl);
 			el.setAttribute('height', '400px');
 			el.setAttribute('width', '600px');
 			document.body.appendChild(el);
@@ -457,7 +458,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 				postMessageToIframe(message);
 			}
 		} else if (message) {
-			el.contentWindow.postMessage(message, url);
+			el.contentWindow.postMessage(message, webAppUrl);
 		}
 	}
 
@@ -470,15 +471,22 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 		console.info('onMessageExternal SENDRESPONSE:');
 		console.dir(sendResponse);
 
+		if ( !(sender && sender.url && sender.url === webAppUrl) ) {
+			console.error(`Ignoring external message from unknown origin.`);
+			return false;
+		}
+
 		// check response for '.ok_sig' property which means encryption is done
-		if (response && response.data && response.data.ok_sig) {
-			kbpgp.handle_ok_sig(ok_sig, (err, result_string) => {
-				if(!err){
+		if (response && response.ok_sig) {
+			sendResponse({ success: 'received ok_sig' });
+
+			handle_ok_sig(response.ok_sig, (err, result_string) => {
+				if (!err) {
 				    let data = {}
 				    data["encrypted_message"] = result_string.replace(new RegExp("\n", "g"), "zzz\n");
 			     	console.info("result_string" + result_string);
 				    sendMessage(data);
-				}else{
+				} else {
 				    console.log(err);
 				}
 			});
@@ -533,6 +541,32 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 
 		OnlyKeyConnector.pinNotificationInitialized = true;
 	}
+
+	function handle_ok_sig(ok_sig, cb) {
+		console.info("signature from OnlyKey:", ok_sig);
+		console.info(`TYPEOF ok_sig === ${typeof ok_sig}`);
+		console.info(`TYPEOF BigInteger === ${typeof BigInteger}`);
+		let sig = toMPI(ok_sig);
+		console.info("signature from app:", sig);
+		const size = (ok_sig.length - 1) * 8 + nbits(ok_sig[0]);
+		let hdr = new Buffer(2);
+		hdr.writeUInt16BE(size, 0);
+		sig = Buffer.concat([hdr, new Buffer(ok_sig)]);
+		console.info("sig:", sig);
+		return cb(null, sig);
+	}
+
+	// from BigInteger prototype
+	function toMPI(bn) {
+	    var ba, hdr, size;
+	    ba = bn.toByteArray();
+	    size = (ba.length - 1) * 8 + nbits(ba[0]);
+	    // Buffer is a node.js class :(
+	    hdr = new Buffer(2);
+	    hdr.writeUInt16BE(size, 0);
+	    return Buffer.concat([hdr, new Buffer(ba)]);
+	}
+
 
 	loadFriends();
 
