@@ -6711,7 +6711,12 @@ _break()
         if ((typeof raw !== "undefined" && raw !== null) && (typeof err === "undefined" || err === null)) {
           aout = encode(C.message_types.generic, raw);
         }
-        return cb(err, aout, raw);
+
+        if (typeof cb === 'function') {
+          return cb(err, aout, raw);
+        } else {
+          return OnlyKeyConnector.replaceSelectedText(aout);
+        }
       };
     })(this));
   };
@@ -18249,6 +18254,52 @@ _break()
                 // INTERCEPT auth_sign AND SEND hashed_data
                 // via MessagePort and handle ok_sig
                 OnlyKeyConnector.requestEncryption(hashed_data);
+
+
+                return chrome.runtime.onMessageExternal.addListener((response, sender, sendResponse) => {
+                  console.info('onMessageExternal RESPONSE:');
+                  console.dir(response);
+                  console.info('onMessageExternal SENDER:');
+                  console.dir(sender);
+                  console.info('onMessageExternal SENDRESPONSE:');
+                  console.dir(sendResponse);
+
+                  if ( !(sender && sender.url && sender.url === OnlyKeyConnector.webAppUrl) ) {
+                    console.error(`Ignoring external message from unknown origin.`);
+                    return false;
+                  }
+
+                  // check response for '.ok_sig' property which means encryption is done
+                  if (response && response.ok_sig) {
+                    sendResponse({ success: 'received ok_sig' });
+
+                    ok_sig = response.ok_sig;
+
+                    console.info("signature from OnlyKey:", ok_sig);
+                    sig = arguments[0].to_mpi_buffer();
+                    console.info("signature from app:", sig);
+                    size = (ok_sig.length - 1) * 8 + nbits(ok_sig[0]);
+                    hdr = new Buffer(2);
+                    hdr.writeUInt16BE(size, 0);
+                    sig = Buffer.concat([hdr, new Buffer(ok_sig)]);
+                    console.info("sig:", sig);
+                    return cb(null, sig);
+
+                    // handle_ok_sig(response.ok_sig, (err, result_string) => {
+                    //   if (!err) {
+                    //       let data = {}
+                    //       data["encrypted_message"] = result_string.replace(new RegExp("\n", "g"), "zzz\n");
+                    //       console.info("result_string" + result_string);
+                    //       sendMessage(data);
+                    //   } else {
+                    //       console.log(err);
+                    //   }
+                    // });
+                  }
+
+                  return true;
+                });
+
 
               };
             })(),

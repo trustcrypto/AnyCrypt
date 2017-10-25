@@ -251,6 +251,8 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	    	currentWindow: true,
 	    	active: true
 	    }, function (tab) {
+	    	console.info(`************** tab:`);
+	    	console.dir(tab);
 		    chrome.tabs.sendRequest(tab[0].id, message);
 		});
 	}
@@ -463,37 +465,37 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	}
 
 	// Chrome Extension - add listener for message from CryptoTrust web app
-	chrome.runtime.onMessageExternal.addListener((response, sender, sendResponse) => {
-		console.info('onMessageExternal RESPONSE:');
-		console.dir(response);
-		console.info('onMessageExternal SENDER:');
-		console.dir(sender);
-		console.info('onMessageExternal SENDRESPONSE:');
-		console.dir(sendResponse);
+	// chrome.runtime.onMessageExternal.addListener((response, sender, sendResponse) => {
+	// 	console.info('onMessageExternal RESPONSE:');
+	// 	console.dir(response);
+	// 	console.info('onMessageExternal SENDER:');
+	// 	console.dir(sender);
+	// 	console.info('onMessageExternal SENDRESPONSE:');
+	// 	console.dir(sendResponse);
 
-		if ( !(sender && sender.url && sender.url === webAppUrl) ) {
-			console.error(`Ignoring external message from unknown origin.`);
-			return false;
-		}
+	// 	if ( !(sender && sender.url && sender.url === webAppUrl) ) {
+	// 		console.error(`Ignoring external message from unknown origin.`);
+	// 		return false;
+	// 	}
 
-		// check response for '.ok_sig' property which means encryption is done
-		if (response && response.ok_sig) {
-			sendResponse({ success: 'received ok_sig' });
+	// 	// check response for '.ok_sig' property which means encryption is done
+	// 	if (response && response.ok_sig) {
+	// 		sendResponse({ success: 'received ok_sig' });
 
-			handle_ok_sig(response.ok_sig, (err, result_string) => {
-				if (!err) {
-				    let data = {}
-				    data["encrypted_message"] = result_string.replace(new RegExp("\n", "g"), "zzz\n");
-			     	console.info("result_string" + result_string);
-				    sendMessage(data);
-				} else {
-				    console.log(err);
-				}
-			});
-		}
+	// 		handle_ok_sig(response.ok_sig, (err, result_string) => {
+	// 			if (!err) {
+	// 			    let data = {}
+	// 			    data["encrypted_message"] = result_string.replace(new RegExp("\n", "g"), "zzz\n");
+	// 		     	console.info("result_string" + result_string);
+	// 			    sendMessage(data);
+	// 			} else {
+	// 			    console.log(err);
+	// 			}
+	// 		});
+	// 	}
 
-		return true;
-	});
+	// 	return true;
+	// });
 
 
 	// Chrome Extension - add listener for message from content script
@@ -542,37 +544,20 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 		OnlyKeyConnector.pinNotificationInitialized = true;
 	}
 
-	function handle_ok_sig(ok_sig, cb) {
-		console.info("signature from OnlyKey:", ok_sig);
-		console.info(`TYPEOF ok_sig === ${typeof ok_sig}`);
-		console.info(`TYPEOF BigInteger === ${typeof BigInteger}`);
-		let sig = toMPI(ok_sig);
-		console.info("signature from app:", sig);
-		const size = (ok_sig.length - 1) * 8 + nbits(ok_sig[0]);
-		let hdr = new Buffer(2);
-		hdr.writeUInt16BE(size, 0);
-		sig = Buffer.concat([hdr, new Buffer(ok_sig)]);
-		console.info("sig:", sig);
-		return cb(null, sig);
+	function replaceSelectedText(str) {
+	    let data = {}
+	    data["encrypted_message"] = str.replace(new RegExp("\n", "g"), "zzz\n");
+	 	console.info("encrypted str" + str);
+	    sendMessage(data);
 	}
-
-	// from BigInteger prototype
-	function toMPI(bn) {
-	    var ba, hdr, size;
-	    ba = bn.toByteArray();
-	    size = (ba.length - 1) * 8 + nbits(ba[0]);
-	    // Buffer is a node.js class :(
-	    hdr = new Buffer(2);
-	    hdr.writeUInt16BE(size, 0);
-	    return Buffer.concat([hdr, new Buffer(ba)]);
-	}
-
 
 	loadFriends();
 
 	return {
 		requestEncryption,
 		promptForPIN,
-		pinNotificationInitialized: false
+		pinNotificationInitialized: false,
+		webAppUrl,
+		replaceSelectedText
 	};
 })();
