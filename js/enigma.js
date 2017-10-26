@@ -374,7 +374,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 										armored: public_key
 								    }, function(err, key_manager) {
 										if (!err) {
-							            	if (friend_list[i] == username) {
+				            	if (friend_list[i] == username) {
 									            var keyids = key_manager.get_all_pgp_key_ids();
 												if (typeof keyids[2] !== "undefined") {
 													poll_delay = 1;  //Assuming RSA 2048
@@ -386,10 +386,9 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 												custom_keyid = keyids[subkey].toString('hex').toUpperCase();
 												custom_keyid = custom_keyid.match(/.{2}/g).map(hexStrToDec);
 												console.info("custom_keyid for signing" + custom_keyid);
-								            } else {
-											    friend_keys[i] = key_manager;
-											    ring.add_key_manager(key_manager);
 								            }
+									    friend_keys[i] = key_manager;
+									    ring.add_key_manager(key_manager);
 										} else {
 										    console.log(err);
 										}
