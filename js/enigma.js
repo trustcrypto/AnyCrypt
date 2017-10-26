@@ -555,7 +555,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 
 	function replaceSelectedText(str) {
 	    let data = {}
-	    data["encrypted_message"] = str;//.replace(new RegExp("\n", "g"), "zzz\n");
+	    data["encrypted_message"] = str.replace(new RegExp("\n", "g"), "zzz\n");
 	 	console.info("encrypted str" + str);
 	    sendMessage(data);
 	}
