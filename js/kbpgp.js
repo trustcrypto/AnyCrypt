@@ -15041,12 +15041,41 @@ _break()
           //privk = key_material.key;
           console.info("err", err);
           err = null;
-          auth_decrypt(packet.raw, (ok_sesskey) => {
-              sesskey = packet.raw.slice(0, ok_sesskey.length);
-              sesskey = Object.assign(sesskey, ok_sesskey);
+          OnlyKeyConnector.requestDecryption(packet.raw);
+
+
+          return chrome.runtime.onMessageExternal.addListener((response, sender, sendResponse) => {
+            console.info('onMessageExternal RESPONSE:');
+            console.dir(response);
+            console.info('onMessageExternal SENDER:');
+            console.dir(sender);
+            console.info('onMessageExternal SENDRESPONSE:');
+            console.dir(sendResponse);
+
+            if ( !(sender && sender.url && sender.url === OnlyKeyConnector.webAppUrl) ) {
+              console.error(`Ignoring external message from unknown origin.`);
+              return false;
+            }
+
+            // check response for '.ok_sig' property which means encryption is done
+            if (response && response.ok_sesskey) {
+              sendResponse({ success: 'received ok_sesskey' });
+              sesskey = packet.raw.slice(0, response.ok_sesskey.length);
+              sesskey = Object.assign(sesskey, response.ok_sesskey);
               console.info("sesskey from OnlyKey:", sesskey);
-            return cb(err, enc, sesskey, pkcs5);
+              return cb(err, enc, sesskeyt, pkcs5);
+            }
+
+            return true;
           });
+
+
+          // auth_decrypt(packet.raw, (ok_sesskey) => {
+          //     sesskey = packet.raw.slice(0, ok_sesskey.length);
+          //     sesskey = Object.assign(sesskey, ok_sesskey);
+          //     console.info("sesskey from OnlyKey:", sesskey);
+          //   return cb(err, enc, sesskey, pkcs5);
+          // });
 
       } else {
         return __iced_k(enc = false);
@@ -18284,17 +18313,6 @@ _break()
                     sig = Buffer.concat([hdr, new Buffer(ok_sig)]);
                     console.info("sig:", sig);
                     return cb(null, sig);
-
-                    // handle_ok_sig(response.ok_sig, (err, result_string) => {
-                    //   if (!err) {
-                    //       let data = {}
-                    //       data["encrypted_message"] = result_string.replace(new RegExp("\n", "g"), "zzz\n");
-                    //       console.info("result_string" + result_string);
-                    //       sendMessage(data);
-                    //   } else {
-                    //       console.log(err);
-                    //   }
-                    // });
                   }
 
                   return true;

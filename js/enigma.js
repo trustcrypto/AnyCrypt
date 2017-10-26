@@ -440,6 +440,15 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 		postMessageToIframe(message);
 	}
 
+	function requestDecryption(packetRaw) {
+		console.info(`************* function requestEncryption() *************`);
+		console.info(`************* packetRaw:`);
+		console.dir(packetRaw);
+
+		const message = { action: 'DECRYPT', packetRaw };
+		postMessageToIframe(message);
+	}
+
 	function postMessageToIframe(message) {
 		const iframeId = 'CryptoTrustIframe';
 		let el = document.getElementById(iframeId);
@@ -545,7 +554,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 
 	function replaceSelectedText(str) {
 	    let data = {}
-	    data["encrypted_message"] = str.replace(new RegExp("\n", "g"), "zzz\n");
+	    data["encrypted_message"] = str;//.replace(new RegExp("\n", "g"), "zzz\n");
 	 	console.info("encrypted str" + str);
 	    sendMessage(data);
 	}
@@ -554,6 +563,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 
 	return {
 		requestEncryption,
+		requestDecryption,
 		promptForPIN,
 		pinNotificationInitialized: false,
 		webAppUrl,
