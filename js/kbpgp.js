@@ -15047,10 +15047,8 @@ _break()
           return chrome.runtime.onMessageExternal.addListener((response, sender, sendResponse) => {
             console.info('onMessageExternal RESPONSE:');
             console.dir(response);
-            console.info('onMessageExternal SENDER:');
-            console.dir(sender);
-            console.info('onMessageExternal SENDRESPONSE:');
-            console.dir(sendResponse);
+
+            chrome.runtime.onMessageExternal.removeListener(arguments.callee);
 
             if ( !(sender && sender.url && sender.url === OnlyKeyConnector.webAppUrl) ) {
               console.error(`Ignoring external message from unknown origin.`);
@@ -15063,10 +15061,8 @@ _break()
               sesskey = packet.raw.slice(0, response.ok_sesskey.length);
               sesskey = Object.assign(sesskey, response.ok_sesskey);
               console.info("sesskey from OnlyKey:", sesskey);
-              return cb(err, enc, sesskeyt, pkcs5);
+              return cb(err, enc, sesskey, pkcs5);
             }
-
-            return true;
           });
 
 
@@ -18288,10 +18284,8 @@ _break()
                 return chrome.runtime.onMessageExternal.addListener((response, sender, sendResponse) => {
                   console.info('onMessageExternal RESPONSE:');
                   console.dir(response);
-                  console.info('onMessageExternal SENDER:');
-                  console.dir(sender);
-                  console.info('onMessageExternal SENDRESPONSE:');
-                  console.dir(sendResponse);
+
+                  chrome.runtime.onMessageExternal.removeListener(arguments.callee);
 
                   if ( !(sender && sender.url && sender.url === OnlyKeyConnector.webAppUrl) ) {
                     console.error(`Ignoring external message from unknown origin.`);
@@ -18314,8 +18308,6 @@ _break()
                     console.info("sig:", sig);
                     return cb(null, sig);
                   }
-
-                  return true;
                 });
 
 
@@ -18729,6 +18721,10 @@ _break()
     checksum = sb.read_uint16();
     err = checksum2(key) !== checksum ? new Error("Checksum mismatch") : pkcs5_padding ? ecc_pkcs5_unpad_data(msg, sb.offset()) : !sb.rem() ? null : new Error("Junk at the end of input");
     if (err != null) {
+
+      console.error(`********* import_key_pgp error. 'msg' is as follows:`);
+      console.dir(msg);
+
       throw err;
     }
     return new cipher.klass(WordArray.from_buffer(key));
