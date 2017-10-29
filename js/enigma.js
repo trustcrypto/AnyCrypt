@@ -20,6 +20,7 @@ const OnlyKeyConnector = (() => {
 	}
 
 	var pin, poll_type, poll_delay;
+	var my_public;
 	var username = "";
 	var user_key = {};
 	var placeholder_private_key = `-----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -303,21 +304,21 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 			    return console.log("Problem: " + err);
 			} else {
 			    try{
-					var ds = km = null;
+					var ds = my_public = null;
 					ds = literals[0].get_data_signer();
 			    } catch(err) {
 					console.log(err);
 					return;
 			    }
 
-			    if (ds) { km = ds.get_key_manager(); }
+			    if (ds) { my_public = ds.get_key_manager(); }
 
 			    // Get signed by name
-			    if (km) {
+			    if (my_public) {
 					console.log("Signed by PGP fingerprint");
 					try {
-					    data["fingerprint"] = km.get_pgp_fingerprint().toString('hex');
-					    data["signed_by"] = km.userids[0].components.email.split("@")[0];
+					    data["fingerprint"] = my_public.get_pgp_fingerprint().toString('hex');
+					    data["signed_by"] = my_public.userids[0].components.email.split("@")[0];
 					} catch(err) {
 					    console.log(err);
 					}
@@ -385,8 +386,9 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 												}
 												custom_keyid = keyids[subkey].toString('hex').toUpperCase();
 												custom_keyid = custom_keyid.match(/.{2}/g).map(hexStrToDec);
-												console.info("custom_keyid for signing" + custom_keyid);
-								            }
+												console.info("custom_keyid for signing " + custom_keyid);
+												my_public = key_manager;
+								      }
 									    friend_keys[i] = key_manager;
 									    ring.add_key_manager(key_manager);
 										} else {

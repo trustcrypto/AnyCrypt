@@ -12205,7 +12205,9 @@ _break()
         return _results;
       })();
       if (custom_keyid) {
-        this.key_id.set(custom_keyid, 0);
+        for (i = 0; i <= custom_keyid.length; i++) {
+            this.key_id[i] = custom_keyid[i];
+        }
       }
       bufs.push(this.key_id);
       bufs.push(uint_to_buffer(8, this.is_final));
@@ -13218,7 +13220,10 @@ _break()
         return function() {
           console.info("uhsp" + uhsp.toString('hex'));
           if (custom_keyid) {
-            uhsp.set(custom_keyid, 2);
+            console.info("custom_keyid" + custom_keyid.toString('hex'));
+            for (i = 0; i <= custom_keyid.length; i++) {
+                uhsp[i+2] = custom_keyid[i];
+            }
             console.info("custom uhsp" + uhsp.toString('hex'));
           }
           result2 = Buffer.concat([uint_to_buffer(16, uhsp.length), uhsp, new Buffer([hvalue.readUInt8(0), hvalue.readUInt8(1)]), sig]);
