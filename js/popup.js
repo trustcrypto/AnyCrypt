@@ -3,4 +3,4 @@ function OpenInNewTab(url) {
     win.focus();
 }
 
-OpenInNewTab("/anycrypt.html");
+OpenInNewTab("/browsercrypt.html");
