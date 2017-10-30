@@ -22,7 +22,7 @@ Please, feel free to commit fixes!
 * Have friends host public keys on Keybase
 * Send and receive encrypted messages with friends, click to encrypt and then confirm on OnlyKey
 
-## Security Goals
+## SECURITY GOALS
 
 **Empower the people**: Give people the ability to securely send and receive messages using any computer with no complicated software/drivers required.
 
