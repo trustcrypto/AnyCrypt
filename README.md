@@ -1,23 +1,25 @@
-![AnyCrypt](images/logo-with-text.png)
+![OnlyKey BrowserCrypt](images/logo-with-text.png)
 ========
 
-A prototype Chrome extension enabling encryption over any web platform, with the help of [keybase.io](https://keybase.io/).
+## ABOUT
 
-The idea, is to show how easy encryption can and should be. This is a prototype, are several vulnrabilities. However, we felt it prudent to try to guage interest prior to commiting many hours to fixing various issues. Keep this in mind, when using our extension. 
+A prototype Chrome extension enabling encryption over any web platform, with the help of [keybase.io](https://keybase.io/) and [OnlyKey](https://crp.to/p/).
+
+## HOW IT WORKS
+
+With Keybase user/key management is made easy and with OnlyKey private keys remain offline and protected. They are not accessible to the browser or the local computer. By using U2F the extension can send messages to OnlyKey to be securely decrypted and signed offline. This provides similar function to a token/smart card but no drivers or software required. With this extension and an OnlyKey secure messages can be sent using Windows, Mac, Linux, Chromebook, and Android (with additional Android app).
 
 Please, feel free to commit fixes!
 
-### REQUIREMENTS
+## REQUIREMENTS
 
+* Add the extension to Chrome or Chromium Browser
 * Signup with [keybase](https://keybase.io)
-* Generate or import public key
-* Be willing Copy & paste private key into application
-* Have friends host public keys on keybase
+* Generate or import public key to Keybase
+* Import private key to OnlyKey
+* Have friends host public keys on Keybase
+* Send and receive encrypted messages with friends, click to encrypt and then confirm on OnlyKey
 
-#### [How it works](http://lettergram.github.io/AnyCrypt/)
+## Thanks to!
 
-## Contribution(s)
-
-* Primary Developer: [Austin Walters](http://austingwalters.com)
-* Graphics: [Vincent Chang](http://www.vincentchang.ninja/)
-
+This work began with a fork of [Anycrypt](http://lettergram.github.io/AnyCrypt/) written by [Austin Walters](http://austingwalters.com).

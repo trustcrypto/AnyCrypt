@@ -155,17 +155,17 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 		return new Promise((resolve, reject) => {
 		    // Import data from chrome storage
 		    let msg = '';
-		    chrome.storage.local.get("anycrypt", items => {
+		    chrome.storage.local.get("browsercrypt", items => {
 				if (chrome.runtime.error) {
 					return handlePromiseErr(`Chrome runtime error`);
 				}
 
 				try {
-				    if(items.anycrypt.friends) {
-						friend_list = items.anycrypt.friends;
+				    if(items.browsercrypt.friends) {
+						friend_list = items.browsercrypt.friends;
 				    }
-				    if(items.anycrypt.username) {
-						username = items.anycrypt.username;
+				    if(items.browsercrypt.username) {
+						username = items.browsercrypt.username;
 				    }
 				} catch(err) {
 				    return handlePromiseErr(err);

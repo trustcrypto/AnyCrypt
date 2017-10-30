@@ -12,17 +12,17 @@ var loadAnyCryptData = function() {
     // create a deferred object
     var r = $.Deferred();
 
-    chrome.storage.local.get("anycrypt", function(items) {
+    chrome.storage.local.get("browsercrypt", function(items) {
 	if (chrome.runtime.error) {
 	    console.log("Chrome runtime error");
 	}
 	try{
 	    // Import data from chrome local storage
-	    if(items.anycrypt.friends != null){
-		friend_list = items.anycrypt.friends;
+	    if(items.browsercrypt.friends != null){
+		friend_list = items.browsercrypt.friends;
 	    }
-	    if(items.anycrypt.username != null){
-		username = items.anycrypt.username;
+	    if(items.browsercrypt.username != null){
+		username = items.browsercrypt.username;
 	    }
 	}catch(err){
 	    console.log(err);
@@ -99,21 +99,21 @@ $(document).ready(function(){
 
     submitButton.onclick = function(){
 
-	anycrypt_data = {};
+	browsercrypt_data = {};
 	var friendEle = document.getElementById("friends").value.replace(/\s+/g, '');
 	friendEle = friendEle.replace(/(?:\r\n|\r|\n)/g, '');
-	anycrypt_data["friends"] = findFriendsOnKeybase(friendEle.split(','));
-	anycrypt_data["username"] = document.getElementById("username").value;
+	browsercrypt_data["friends"] = findFriendsOnKeybase(friendEle.split(','));
+	browsercrypt_data["username"] = document.getElementById("username").value;
 
 	document.getElementById("submit").innerHTML = "Submitted!";
 
 	// Save it using the Chrome extension storage API.
-	chrome.storage.local.set({'anycrypt': anycrypt_data}, function() {
+	chrome.storage.local.set({'browsercrypt': browsercrypt_data}, function() {
 	    if (chrome.runtime.error) {
 		console.log("Storage Save: Runtime error.");
 	    }else{
-		console.log("Successfully stored anycrypt_data");
-		console.log(anycrypt_data);
+		console.log("Successfully stored browsercrypt_data");
+		console.log(browsercrypt_data);
 	    }
 	});
 
