@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
-    "name": "OnlyKey",
-    "description": "This extension enables automatic encrypting and decrypting of gpg messages",
-    "version": "0.0.1",
+    "name": "OnlyKey BrowserCrypt",
+    "description": "Secure OpenPGP messages in the browser using OnlyKey",
+    "version": "0.2.1",
 
     "browser_action": {
 		"default_popup": "popup.html",
@@ -24,7 +24,7 @@
 	    }
     ],
 	"externally_connectable": {
-		"matches": ["*://*.crp.to/*"]
+		"matches": ["https://*.crp.to/*"]
 	},
     "web_accessible_resources": [
 		"images/*.gif",

@@ -538,10 +538,10 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 			type:     'basic',
 			iconUrl:  '../images/icon64.png',
 			title:    'PIN Required',
-			message:  `Tap the encryption PIN ${pin} on your OnlyKey.`,
+			message:  `Wait for OnlyKey to start flashing then enter challenge code ${pin} on your OnlyKey`,
 			priority: 0
 		};
-		const autoClearBadgeTimeoutSeconds = 20;
+		const autoClearBadgeTimeoutSeconds = 25;
 
 		// make sure it is closed, not just system hidden
 		chrome.notifications.clear('OnlyKeyPinNotification');
