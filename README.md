@@ -3,13 +3,19 @@
 
 **Still in early development available for testing only.**
 
-## ABOUT
+## About
 
 BrowserCrypt is a Google Chrome Extension that integrates with [OnlyKey](https://crp.to/p/) and [keybase.io](https://keybase.io/) to provide easy and secure PGP encryption in Google Chrome.
 
-## HOW IT WORKS
+## How it works
 
 With Keybase user/key management is made easy and with OnlyKey private keys remain offline and protected. They are not accessible to the browser, the extension, or the local computer. By using U2F the extension can send messages to OnlyKey to be securely decrypted and signed offline. This provides similar function to a token/smart card but no drivers or software required. With this extension and an OnlyKey secure messages can be sent using Windows, Mac, Linux, Chromebook.
+
+## Setup
+
+**Before using this extension you must follow these instructions to generate PGP keys and load them on OnlyKey:**
+- [Generate keys](https://docs.crp.to/usersguide.html#generating-keys) using Keybase
+- [Load keys](https://docs.crp.to/usersguide.html#loading-keys) onto OnlyKey
 
 ### Install extension
 
@@ -34,6 +40,8 @@ After you create a Keybase account using the instructions provided in the [User'
 - Type in your friends Keybase Usernames in the second box. Separated by commas.
 - Click Submit
 
+## Sending and receiving secure messages
+
 Now whenever you need to send an encrypted message:
 
 ![Click to encrypt](https://raw.githubusercontent.com/trustcrypto/OnlyKey-BrowserCrypt/master/images/Click-to-encrypt.jpg)
@@ -50,7 +58,7 @@ The encrypted message will be displayed and you can paste it into an email, IM, 
 
 ![Confirm on OnlyKey to Decrypt](https://raw.githubusercontent.com/trustcrypto/OnlyKey-BrowserCrypt/master/images/decrypt.gif)
 
-## SECURITY GOALS
+## Security Goals
 
 **Empower the people**: Give people the ability to securely send and receive messages using any computer with no complicated software/drivers required and no worrying about compromise of user's private identity.
 
@@ -64,10 +72,30 @@ The encrypted message will be displayed and you can paste it into an email, IM, 
 
 Please, feel free to commit fixes!
 
-## PROTOCOL
+## Protocol
 
 A detailed description of the underlying communication protocol can be found here - https://github.com/onlykey/onlykey.github.io
 
 ## Thanks to!
 
 This work began with a fork of [Anycrypt](http://lettergram.github.io/AnyCrypt/) written by [Austin Walters](http://austingwalters.com).
+
+## Cryptography Notice
+
+This distribution includes cryptographic software. The country in which you currently reside may have restrictions on the import, possession, use, and/or re-export to another country, of encryption software.
+BEFORE using any encryption software, please check your country's laws, regulations and policies concerning the import, possession, or use, and re-export of encryption software, to see if this is permitted.
+See <http://www.wassenaar.org/> for more information.
+
+The U.S. Government Department of Commerce, Bureau of Industry and Security (BIS), has classified this software as Export Commodity Control Number (ECCN) 5D002.C.1, which includes information security software using or performing cryptographic functions with asymmetric algorithms.
+The form and manner of this distribution makes it eligible for export under the License Exception ENC Technology Software Unrestricted (TSU) exception (see the BIS Export Administration Regulations, Section 740.13) for both object code and source code.
+
+The following cryptographic software is included in this distribution:
+
+   "Fast Elliptic Curve Cryptography in plain javascript" - https://github.com/indutny/elliptic
+   "RFC4880 Implementation in IcedCoffeeScript" - https://github.com/keybase/kbpgp
+
+For more information on export restrictions see: http://www.apache.org/licenses/exports/
+
+## Source
+
+[OnlyKey WebCrypt on Github](https://github.com/trustcrypto/OnlyKey-BrowserCrypt)
