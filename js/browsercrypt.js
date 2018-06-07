@@ -7,7 +7,7 @@ var copied_private_key = "";
 /**
  *  Loads friends saved in chromes local memory
  */
-var loadAnyCryptData = function() {
+var loadBrowserCryptData = function() {
 
     // create a deferred object
     var r = $.Deferred();
@@ -124,7 +124,7 @@ $(document).ready(function(){
 	location.reload();
     }
 
-    loadAnyCryptData().done(function(){
+    loadBrowserCryptData().done(function(){
 	document.getElementById("loading-bar").innerHTML = "";
 	document.getElementById("settings").style.display = 'block';
 	document.getElementById("username").value = username;

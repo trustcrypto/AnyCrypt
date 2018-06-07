@@ -151,7 +151,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	/**
 	 *  Loads friends saved in chromes local memory
 	 */
-	var loadAnyCryptData = function() {
+	var loadBrowserCryptData = function() {
 		return new Promise((resolve, reject) => {
 		    // Import data from chrome storage
 		    let msg = '';
@@ -287,13 +287,13 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	 *  Callback function
 	 */
 	const decrypt = function(encrypted, sendResponse) {
-	    var encrypted_string = encrypted.replace(new RegExp("zzz ", "g"), "\n");
-	    encrypted_string = encrypted_string.replace(new RegExp("zzz\n", "g"), "\n");
-	    encrypted_string = encrypted_string.replace(new RegExp("zzz", "g"), "\n");
+	    var encrypted_string = encrypted;
+	    encrypted_string = encrypted_string.replace(new RegExp(" \n", "g"), "\n");
+	    //encrypted_string = encrypted_string.replace(new RegExp("zzz", "g"), "\n");
 
 	    var decrypted_string = "";
 	    var data = {"decrypted_message": "ENCRYPTED MESSAGE: Not for you," };
-	    data["decrypted_message"] += "\n or you need to add the sender to your AnyCrypt friends";
+	    data["decrypted_message"] += "\n or you need to add the sender to your BrowserCrypt friends";
 
 	    data["encrypted_message"] = encrypted_string; // encrypted string added for reference
 
@@ -347,9 +347,13 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 	    decrypt(info.selectionText, sendMessage);
 	};
 
+	function onRequestCompose(info, tab) {
+	    decrypt(info.selectionText, sendMessage);
+	};
+
 	function loadSettings(id) {
 		setContextMenus(() => {
-		    loadAnyCryptData().then(function() {
+		    loadBrowserCryptData().then(function() {
 				loadPrivatePlaceholder();
 				if (!(username && friend_list.length)) {
 					console.error('Missing keybase username and/or friends :-/');
@@ -427,7 +431,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 			// Add context menu items
 			chrome.contextMenus.create({"id": encryptMenuId, "parentId": menuRootId, "title": "Encrypt", "contexts":["selection"], "onclick": loadFriends });
 			chrome.contextMenus.create({"title": "Decrypt Message", "parentId": menuRootId, "contexts":["selection"], "onclick": onRequestDecrypt });
-			chrome.contextMenus.create({"title": "Connect to OnlyKeyConnector", "parentId": menuRootId, "contexts":["selection"], "onclick": postMessageToIframe.bind(null, null) });
+			chrome.contextMenus.create({"title": "Secure Compose Window", "parentId": menuRootId, "contexts":["selection"], "onclick": onRequestCompose });
 			return cb();
 		});
 	}
@@ -557,7 +561,7 @@ AAuXXx+QEJsopLffeE+9q0owSCwX1E/dydgryRSga90BZT0k/g==
 
 	function replaceSelectedText(str) {
 	    let data = {}
-	    data["encrypted_message"] = str.replace(new RegExp("\n", "g"), "zzz\n");
+	    data["encrypted_message"] = str;
 	 	console.info("encrypted str" + str);
 	    sendMessage(data);
 	}

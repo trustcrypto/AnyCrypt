@@ -1,4 +1,4 @@
-![OnlyKey BrowserCrypt](images/logo-with-text.png)
+![OnlyKey BrowserCrypt](https://raw.githubusercontent.com/trustcrypto/OnlyKey-BrowserCrypt/master/images/logo-with-text.png)
 ========
 
 **Still in early development available for testing only.**

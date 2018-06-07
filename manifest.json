@@ -6,7 +6,7 @@
 
     "browser_action": {
 		"default_popup": "popup.html",
-		"default_page": "anycrypt.html",
+		"default_page": "browsercrypt.html",
 		"default_icon": "images/icon1024.png"
     },
 

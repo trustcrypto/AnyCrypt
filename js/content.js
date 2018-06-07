@@ -30,7 +30,7 @@ chrome.extension.onRequest.addListener(function(request) {
 
 /**
  *  Sends message to background script for decrypt
- */ 
+ */
 requestDecrypt = function(encrypted_message, element) {
     data = {};
     data["encrypted_message"] = encrypted_message;
@@ -59,7 +59,7 @@ requestDecrypt = function(encrypted_message, element) {
     });
 }
 
-/**      
+/**
  *  Searches for a decrypted message
  */
 searchForEncryptedMessages = function() {
@@ -75,23 +75,32 @@ searchForEncryptedMessages = function() {
 		   && element[i].textContent.indexOf(end) > -1)	{
 		    var msg = element[i].textContent;
 		    var encrypted_message = msg.substring(msg.lastIndexOf(start), msg.lastIndexOf(end)+end.length+4);
-		    requestDecrypt(encrypted_message, element[i]);
+
+				// Add image in place of PGP message
+				img_loc = chrome.extension.getURL('images/icon32-low.png');
+				img_html = '<img id="keylimepie" src="'+img_loc+'">';
+				element.innerHTML = img_html;
+        console.info("found PGP message");
+
+
+
+        //requestDecrypt(encrypted_message, element[i]);
 		}
-    }    
+    }
 }
 
 $(document).ready(function(){
     searchForEncryptedMessages();
-    
+
     // Fire new search for encrypted messages if there is a change to the page
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-    
+
     var observer = new MutationObserver(function(mutations, observer) {
 		var clock = new Date();
 		var curr_time = clock.getTime();
 
 		var time_diff = curr_time - previous_time
-		
+
 		if (time_diff > max_time) {
 		    console.log("Searching for messages to decrypt");
 		    max_time = Math.round((max_time + (time_diff / 4)) % 5000);
@@ -99,7 +108,7 @@ $(document).ready(function(){
 		}
 		previous_time = curr_time;
     });
-    
+
     observer.observe(document.body, {
 		childList: true,
 		subtree: true,

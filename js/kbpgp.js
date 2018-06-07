@@ -15365,7 +15365,7 @@ _break()
             (function(__iced_k) {
               __iced_deferrals = new iced.Deferrals(__iced_k, {
                 parent: ___iced_passed_deferral,
-                filename: "/Users/max/src/keybase/kbpgp/src/openpgp/processor.iced",
+                filename: "/home/michal/kbpgp/src/openpgp/processor.iced",
                 funcname: "Message._verify_sig"
               });
               _this.keyfetch.fetch([a], konst.ops.verify, __iced_deferrals.defer({
@@ -15376,10 +15376,12 @@ _break()
                     return i = arguments[2];
                   };
                 })(),
-                lineno: 247
+                lineno: 268
               }));
               __iced_deferrals._fulfill();
-            })(__iced_k);
+            })(function() {
+              return __iced_k(err != null ? err = new Error("Can't find sender's public key to verify message with") : void 0);
+            });
           } else {
             return __iced_k();
           }
@@ -15390,11 +15392,12 @@ _break()
             if (err == null) {
               key_material = km.find_pgp_key_material(a);
               sig.close.key = key_material.key;
+              sig.close.subkey_material = key_material;
               sig.close.key_manager = km;
               (function(__iced_k) {
                 __iced_deferrals = new iced.Deferrals(__iced_k, {
                   parent: ___iced_passed_deferral,
-                  filename: "/Users/max/src/keybase/kbpgp/src/openpgp/processor.iced",
+                  filename: "/home/michal/kbpgp/src/openpgp/processor.iced",
                   funcname: "Message._verify_sig"
                 });
                 sig.close.verify(sig.payload, __iced_deferrals.defer({
@@ -15403,8 +15406,10 @@ _break()
                       return err = arguments[0];
                     };
                   })(),
-                  lineno: 259
-                }));
+                  lineno: 283
+                }), {
+                  now: _this.now
+                });
                 __iced_deferrals._fulfill();
               })(__iced_k);
             } else {
